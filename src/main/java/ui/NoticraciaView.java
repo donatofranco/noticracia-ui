@@ -5,39 +5,36 @@ import noticracia.core.Noticracia;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
 
+@SuppressWarnings("deprecation")
 public class NoticraciaView extends JFrame implements Observer {
 
-    private Noticracia noticracia;
-    private NoticraciaController noticraciaController;
+    private final Noticracia noticracia;
+    private final NoticraciaController noticraciaController;
 
     public NoticraciaView(Noticracia noticracia) {
         this.noticracia = noticracia;
         initialize();
 
-        noticraciaController = new NoticraciaController(this, noticracia);
+        noticraciaController = new NoticraciaController(this, this.noticracia);
         noticracia.addObserver(this);
     }
 
-
     @Override
     public void update(Observable o, Object arg) {
-        // TODO: Implementar, tiene que "rehacer" la nube de palabras
+        if (o instanceof Noticracia){
+            this.generateWordCloud((Map<String, Integer>) arg);
+        }
     }
-
 
     private JComboBox<String> candidateComboBox;
     private JComboBox<String> sourceComboBox;
-    private JButton generateButton;
     private JTextField newSourceField;
-    private JButton addSourceButton;
     private JPanel wordCloudPanel;
 
-    private String[] candidates = {"Candidato A", "Candidato B", "Candidato C"};
-    private Vector<String> sources = new Vector<>(Arrays.asList("Fuente 1", "Fuente 2", "Fuente 3"));
+    private final String[] candidates = {"Candidato A", "Candidato B", "Candidato C"};
+    private final Vector<String> sources = new Vector<>(Arrays.asList("Fuente 1", "Fuente 2", "Fuente 3"));
 
 
 
@@ -55,7 +52,7 @@ public class NoticraciaView extends JFrame implements Observer {
 
         candidateComboBox = new JComboBox<>(candidates);
         sourceComboBox = new JComboBox<>(sources);
-        generateButton = new JButton("Generar Nube de Palabras");
+        JButton generateButton = new JButton("Generar Nube de Palabras");
 
         selectionPanel.add(new JLabel("Seleccionar Candidato:"));
         selectionPanel.add(candidateComboBox);
@@ -68,7 +65,7 @@ public class NoticraciaView extends JFrame implements Observer {
         //addSourcePanel.setBorder(BorderFactory.createTitledBorder("Añadir Nueva Fuente"));
 
         newSourceField = new JTextField(20);
-        addSourceButton = new JButton("Añadir Fuente");
+        JButton addSourceButton = new JButton("Añadir Fuente");
 
         //addSourcePanel.add(newSourceField);
         //addSourcePanel.add(addSourceButton);
@@ -93,22 +90,23 @@ public class NoticraciaView extends JFrame implements Observer {
         add(mainPanel, BorderLayout.NORTH);
         add(new JScrollPane(wordCloudPanel), BorderLayout.CENTER);
 
-        generateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                generateWordCloud();
-            }
-        });
+        generateButton.addActionListener(_ -> generateWordCloud(
+                Map.of(
+                        "Economía", new Random().nextInt(20) + 12,
+                        "Educación", new Random().nextInt(20) + 12,
+                        "Salud", new Random().nextInt(20) + 12,
+                        "Seguridad", new Random().nextInt(20) + 12,
+                        "Empleo", new Random().nextInt(20) + 12,
+                        "Infraestructura", new Random().nextInt(20) + 12,
+                        "Corrupción", new Random().nextInt(20) + 12,
+                        "Medio Ambiente", new Random().nextInt(20) + 12
+                )
+        ));
 
-        addSourceButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                addNewSource();
-            }
-        });
+        addSourceButton.addActionListener(_ -> addNewSource());
     }
 
-    private void generateWordCloud() {
+    private void generateWordCloud(Map<String, Integer> wordCloud) {
         String selectedCandidate = (String) candidateComboBox.getSelectedItem();
         String selectedSource = (String) sourceComboBox.getSelectedItem();
 
@@ -118,13 +116,21 @@ public class NoticraciaView extends JFrame implements Observer {
             g.fillRect(0, 0, wordCloudPanel.getWidth(), wordCloudPanel.getHeight());
 
             g.setColor(Color.BLACK);
-            String[] words = {"Economía", "Educación", "Salud", "Seguridad", "Empleo", "Infraestructura", "Corrupción", "Medio Ambiente"};
-            Random rand = new Random();
+            Map<String, Integer> words = Map.of(
+                    "Economía", new Random().nextInt(20) + 12,
+                    "Educación", new Random().nextInt(20) + 12,
+                    "Salud", new Random().nextInt(20) + 12,
+                    "Seguridad", new Random().nextInt(20) + 12,
+                    "Empleo", new Random().nextInt(20) + 12,
+                    "Infraestructura", new Random().nextInt(20) + 12,
+                    "Corrupción", new Random().nextInt(20) + 12,
+                    "Medio Ambiente", new Random().nextInt(20) + 12
+            );
 
-            for (String word : words) {
-                int fontSize = rand.nextInt(20) + 12;  // Tamaño de fuente entre 12 y 32
-                g.setFont(new Font("Arial", Font.BOLD, fontSize));
-                g.drawString(word, rand.nextInt(wordCloudPanel.getWidth() - 100), rand.nextInt(wordCloudPanel.getHeight() - 20) + 20);
+            var rand = new Random();
+            for (Map.Entry<String, Integer> word : wordCloud.entrySet()) {
+                g.setFont(new Font("Arial", Font.BOLD, word.getValue()));
+                g.drawString(word.getKey(), rand.nextInt(wordCloudPanel.getWidth() - 100), rand.nextInt(wordCloudPanel.getHeight() - 20) + 20);
             }
 
             g.setFont(new Font("Arial", Font.PLAIN, 12));
