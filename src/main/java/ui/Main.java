@@ -11,7 +11,11 @@ public class Main {
 
     public Main() {
         this.noticracia = new Noticracia(new ClarinInformationSource());
-        this.noticracia.setPolitian("Candidato 1");
+        this.noticracia.setPolitician("Candidato A");
+    }
+
+    public static void main(String[] args) {
+        new Main().init();
     }
 
     public void init() {
@@ -21,10 +25,4 @@ public class Main {
         });
     }
 
-
-    public static void main(String[] args) {
-
-        new Main().init();
-
-    }
 }

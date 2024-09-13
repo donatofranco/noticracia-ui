@@ -11,13 +11,16 @@ public class ClarinInformationSource extends InformationSource {
     @Override
     public void startInformationCollection(String politicianName) {
         /*
-            COSAS COSAS COSAS
+            COSAS, COSAS, COSAS
          */
         CompletableFuture.runAsync(() -> {
             try {
                 Thread.sleep(5000); // Pausa por 5 segundos
                 setChanged();
-                notifyObservers(Map.of("link", "textito"));
+                notifyObservers(Map.of(
+                        "link",
+                        "textito textito textito textito textito textito textito textito"
+                ));
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 System.out.println("El hilo fue interrumpido");
