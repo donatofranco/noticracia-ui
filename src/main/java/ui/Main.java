@@ -11,6 +11,7 @@ public class Main {
 
     public Main() {
         this.noticracia = new Noticracia(new ClarinInformationSource());
+        this.noticracia.setPolitian("Candidato 1");
     }
 
     public void init() {
