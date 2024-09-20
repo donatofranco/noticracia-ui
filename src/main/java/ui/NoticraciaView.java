@@ -5,148 +5,156 @@ import noticracia.core.Noticracia;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.util.*;
 
-@SuppressWarnings("deprecation")
 public class NoticraciaView extends JFrame implements Observer {
-
     private final Noticracia noticracia;
     private final NoticraciaController noticraciaController;
+    private JComboBox<String> candidateComboBox;
+    private JComboBox<String> sourceComboBox;
+    private JButton startButton;
+    private JButton cancelButton;
+    private JPanel wordCloudPanel;
 
     public NoticraciaView(Noticracia noticracia) {
         this.noticracia = noticracia;
-        initialize();
-
-        noticraciaController = new NoticraciaController(this, this.noticracia);
+        this.noticraciaController = new NoticraciaController(this, noticracia);
+        initializeUI();
         noticracia.addObserver(this);
     }
 
-    @Override
-    public void update(Observable o, Object arg) {
-        if (o instanceof Noticracia){
-            this.generateWordCloud((Map<String, Integer>) arg);
-        }
-    }
-
-    private JComboBox<String> candidateComboBox;
-    private JComboBox<String> sourceComboBox;
-    private JTextField newSourceField;
-    private JPanel wordCloudPanel;
-
-    private final String[] candidates = {"Candidato A", "Candidato B", "Candidato C"};
-    private final Vector<String> sources = new Vector<>(Arrays.asList("Fuente 1", "Fuente 2", "Fuente 3"));
-
-
-
-    private void initialize() {
-        setTitle("Noticracia");
-        setSize(600, 500);
+    private void initializeUI() {
+        setTitle("Noticracia - Nube de Palabras");
+        setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
+        setupSelectionPanel();
+        setupWordCloudPanel();
+        pack();
+        setLocationRelativeTo(null);
+    }
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
+    private void setupSelectionPanel() {
+        JPanel selectionPanel = new JPanel(new GridBagLayout());
+        selectionPanel.setBorder(BorderFactory.createTitledBorder("Configuración"));
 
-        JPanel selectionPanel = new JPanel(new GridLayout(3, 2, 10, 10));
-        selectionPanel.setBorder(BorderFactory.createTitledBorder("Generar Nube de Palabras"));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
 
-        candidateComboBox = new JComboBox<>(candidates);
-        sourceComboBox = new JComboBox<>(sources);
-        JButton generateButton = new JButton("Generar Nube de Palabras");
+        gbc.anchor = GridBagConstraints.LINE_END;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        selectionPanel.add(new JLabel("Seleccionar Candidato:"), gbc);
 
-        selectionPanel.add(new JLabel("Seleccionar Candidato:"));
-        selectionPanel.add(candidateComboBox);
-        //selectionPanel.add(new JLabel("Seleccionar Fuente:"));
-        //selectionPanel.add(sourceComboBox);
-        selectionPanel.add(new JLabel());
-        selectionPanel.add(generateButton);
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        candidateComboBox = new JComboBox<>(new String[]{"Javier Milei", "Cristina Kirchner"});
+        selectionPanel.add(candidateComboBox, gbc);
 
-        //JPanel addSourcePanel = new JPanel(new FlowLayout());
-        //addSourcePanel.setBorder(BorderFactory.createTitledBorder("Añadir Nueva Fuente"));
+        gbc.anchor = GridBagConstraints.LINE_END;
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        selectionPanel.add(new JLabel("Seleccionar Fuente:"), gbc);
 
-        newSourceField = new JTextField(20);
-        JButton addSourceButton = new JButton("Añadir Fuente");
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        sourceComboBox = new JComboBox<>();
+        selectionPanel.add(sourceComboBox, gbc);
 
-        //addSourcePanel.add(newSourceField);
-        //addSourcePanel.add(addSourceButton);
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 2;
+        startButton = new JButton("Generar Nube de Palabras");
+        startButton.addActionListener(e -> {
+            startButton.setEnabled(false);
+            cancelButton.setVisible(true);
+            noticraciaController.startProcess((String) candidateComboBox.getSelectedItem(), (String) sourceComboBox.getSelectedItem());
+        });
+        selectionPanel.add(startButton, gbc);
 
+        gbc.anchor = GridBagConstraints.CENTER;
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 2;
+        cancelButton = new JButton("Cancelar");
+        cancelButton.setVisible(false);
+        cancelButton.addActionListener(e -> {
+            startButton.setEnabled(true);
+            cancelButton.setVisible(false);
+            noticraciaController.stopProcess();
+        });
+        selectionPanel.add(cancelButton, gbc);
+
+        add(selectionPanel, BorderLayout.NORTH);
+    }
+
+    private void setupWordCloudPanel() {
         wordCloudPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.setColor(Color.LIGHT_GRAY);
+                g.setColor(Color.WHITE);
                 g.fillRect(0, 0, getWidth(), getHeight());
-                g.setColor(Color.BLACK);
-                g.drawString("Aquí se mostrará la nube de palabras", 10, 20);
             }
         };
-        wordCloudPanel.setPreferredSize(new Dimension(500, 300));
-
-        mainPanel.add(selectionPanel);
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        //mainPanel.add(addSourcePanel);
-        mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-
-        add(mainPanel, BorderLayout.NORTH);
+        wordCloudPanel.setPreferredSize(new Dimension(500, 400));
         add(new JScrollPane(wordCloudPanel), BorderLayout.CENTER);
-
-        generateButton.addActionListener(_ -> generateWordCloud(
-                Map.of(
-                        "Economía", new Random().nextInt(20) + 12,
-                        "Educación", new Random().nextInt(20) + 12,
-                        "Salud", new Random().nextInt(20) + 12,
-                        "Seguridad", new Random().nextInt(20) + 12,
-                        "Empleo", new Random().nextInt(20) + 12,
-                        "Infraestructura", new Random().nextInt(20) + 12,
-                        "Corrupción", new Random().nextInt(20) + 12,
-                        "Medio Ambiente", new Random().nextInt(20) + 12
-                )
-        ));
-
-        addSourceButton.addActionListener(_ -> addNewSource());
     }
 
-    private void generateWordCloud(Map<String, Integer> wordCloud) {
-        String selectedCandidate = (String) candidateComboBox.getSelectedItem();
-        String selectedSource = (String) sourceComboBox.getSelectedItem();
-
-        if (selectedCandidate != null && selectedSource != null) {
-            Graphics g = wordCloudPanel.getGraphics();
-            g.setColor(Color.WHITE);
-            g.fillRect(0, 0, wordCloudPanel.getWidth(), wordCloudPanel.getHeight());
-
-            g.setColor(Color.BLACK);
-            Map<String, Integer> words = Map.of(
-                    "Economía", new Random().nextInt(20) + 12,
-                    "Educación", new Random().nextInt(20) + 12,
-                    "Salud", new Random().nextInt(20) + 12,
-                    "Seguridad", new Random().nextInt(20) + 12,
-                    "Empleo", new Random().nextInt(20) + 12,
-                    "Infraestructura", new Random().nextInt(20) + 12,
-                    "Corrupción", new Random().nextInt(20) + 12,
-                    "Medio Ambiente", new Random().nextInt(20) + 12
-            );
-
-            var rand = new Random();
-            for (Map.Entry<String, Integer> word : wordCloud.entrySet()) {
-                g.setFont(new Font("Arial", Font.BOLD, word.getValue()));
-                g.drawString(word.getKey(), rand.nextInt(wordCloudPanel.getWidth() - 100), rand.nextInt(wordCloudPanel.getHeight() - 20) + 20);
-            }
-
-            g.setFont(new Font("Arial", Font.PLAIN, 12));
-            g.drawString("Nube de palabras para " + selectedCandidate + " usando " + selectedSource, 10, wordCloudPanel.getHeight() - 10);
+    @Override
+    public void update(Observable o, Object arg) {
+        if (o instanceof Noticracia && arg instanceof Map) {
+            updateWordCloud((Map<String, Integer>) arg);
         }
     }
 
-    private void addNewSource() {
-        String newSource = newSourceField.getText().trim();
-        if (!newSource.isEmpty()) {
-            sources.add(newSource);
-            sourceComboBox.addItem(newSource);
-            newSourceField.setText("");
-            JOptionPane.showMessageDialog(this, "Nueva fuente añadida: " + newSource);
+    private void updateWordCloud(Map<String, Integer> wordCloud) {
+        repaint();
+    }
+
+    private void drawWordCloud(Graphics g, Map<String, Integer> wordCloud) {
+        Graphics2D g2d = (Graphics2D) g;
+        Random random = new Random();
+        Dimension panelSize = wordCloudPanel.getSize();
+
+        for (Map.Entry<String, Integer> entry : wordCloud.entrySet()) {
+            String word = entry.getKey();
+            int count = entry.getValue();
+
+            int fontSize = Math.max(10, (int) (count * 2));
+            Font font = new Font("Arial", Font.BOLD, fontSize);
+            g2d.setFont(font);
+
+            FontMetrics metrics = g2d.getFontMetrics(font);
+            int stringWidth = metrics.stringWidth(word);
+            int stringHeight = metrics.getHeight();
+
+            int x = random.nextInt(panelSize.width - stringWidth) + stringWidth / 2;
+            int y = random.nextInt(panelSize.height - stringHeight) + stringHeight;
+
+
+            float angle = random.nextFloat() * 360;
+            AffineTransform originalTransform = g2d.getTransform();
+            g2d.translate(x, y);
+            g2d.rotate(Math.toRadians(angle));
+            g2d.drawString(word, -stringWidth / 2, stringHeight / 2);
+            g2d.setTransform(originalTransform);
         }
     }
 
+    public void updateInformationSources(Set<String> sources) {
+        SwingUtilities.invokeLater(() -> {
+            sourceComboBox.setModel(new DefaultComboBoxModel<>(sources.toArray(new String[0])));
+            sourceComboBox.revalidate();
+            sourceComboBox.repaint();
+        });
+    }
 
+    public void setProcessing(boolean isProcessing) {
+        startButton.setEnabled(!isProcessing);
+    }
 }
