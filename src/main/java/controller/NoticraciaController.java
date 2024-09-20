@@ -5,8 +5,8 @@ import ui.NoticraciaView;
 
 public class NoticraciaController {
 
-    private Noticracia noticracia;
-    private NoticraciaView noticraciaView;
+    private final Noticracia noticracia;
+    private final NoticraciaView noticraciaView;
 
     public NoticraciaController(NoticraciaView noticraciaView, Noticracia noticracia) {
         this.noticracia = noticracia;
