@@ -6,6 +6,8 @@ import noticracia.core.Noticracia;
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 public class NoticraciaView extends JFrame implements Observer {
@@ -29,18 +31,19 @@ public class NoticraciaView extends JFrame implements Observer {
     }
 
     private JComboBox<String> candidateComboBox;
-    private JComboBox<String> sourceComboBox;
-    private JTextField newSourceField;
+    private JButton startButton;
+    private JButton cancelButton;
     private JPanel wordCloudPanel;
+    private JComboBox<String> sourceComboBox;
 
-    private final String[] candidates = {"Candidato A", "Candidato B", "Candidato C"};
-    private final Vector<String> sources = new Vector<>(Arrays.asList("Fuente 1", "Fuente 2", "Fuente 3"));
+
+    private final String[] candidates = {"Javier Milei", "Cristina Kirchner"};
 
 
 
     private void initialize() {
         setTitle("Noticracia");
-        setSize(600, 500);
+        setSize(1000, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -51,24 +54,34 @@ public class NoticraciaView extends JFrame implements Observer {
         selectionPanel.setBorder(BorderFactory.createTitledBorder("Generar Nube de Palabras"));
 
         candidateComboBox = new JComboBox<>(candidates);
-        sourceComboBox = new JComboBox<>(sources);
-        JButton generateButton = new JButton("Generar Nube de Palabras");
+        sourceComboBox = new JComboBox<>();
+
+
+
+        startButton = new JButton("Generar Nube de Palabras");
+        startButton.addActionListener(e -> {
+            startButton.setEnabled(false);
+            cancelButton.setVisible(true);
+            noticraciaController.startProcess((String) candidateComboBox.getSelectedItem(), (String) sourceComboBox.getSelectedItem());
+        });
+
+        cancelButton = new JButton("Cancelar");
+        cancelButton.setVisible(false);
+        cancelButton.addActionListener(e -> {
+            startButton.setEnabled(true);
+            cancelButton.setVisible(false);
+            noticraciaController.stopProcess();
+        });
 
         selectionPanel.add(new JLabel("Seleccionar Candidato:"));
         selectionPanel.add(candidateComboBox);
-        //selectionPanel.add(new JLabel("Seleccionar Fuente:"));
-        //selectionPanel.add(sourceComboBox);
-        selectionPanel.add(new JLabel());
-        selectionPanel.add(generateButton);
+        selectionPanel.add(new JLabel("Seleccionar Fuente:"));
+        selectionPanel.add(sourceComboBox);
 
-        //JPanel addSourcePanel = new JPanel(new FlowLayout());
-        //addSourcePanel.setBorder(BorderFactory.createTitledBorder("Añadir Nueva Fuente"));
+        selectionPanel.add(startButton);
+        selectionPanel.add(cancelButton);
 
-        newSourceField = new JTextField(20);
         JButton addSourceButton = new JButton("Añadir Fuente");
-
-        //addSourcePanel.add(newSourceField);
-        //addSourcePanel.add(addSourceButton);
 
         wordCloudPanel = new JPanel() {
             @Override
@@ -84,26 +97,12 @@ public class NoticraciaView extends JFrame implements Observer {
 
         mainPanel.add(selectionPanel);
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
-        //mainPanel.add(addSourcePanel);
+
         mainPanel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         add(mainPanel, BorderLayout.NORTH);
         add(new JScrollPane(wordCloudPanel), BorderLayout.CENTER);
 
-        generateButton.addActionListener(_ -> generateWordCloud(
-                Map.of(
-                        "Economía", new Random().nextInt(20) + 12,
-                        "Educación", new Random().nextInt(20) + 12,
-                        "Salud", new Random().nextInt(20) + 12,
-                        "Seguridad", new Random().nextInt(20) + 12,
-                        "Empleo", new Random().nextInt(20) + 12,
-                        "Infraestructura", new Random().nextInt(20) + 12,
-                        "Corrupción", new Random().nextInt(20) + 12,
-                        "Medio Ambiente", new Random().nextInt(20) + 12
-                )
-        ));
-
-        addSourceButton.addActionListener(_ -> addNewSource());
     }
 
     private void generateWordCloud(Map<String, Integer> wordCloud) {
@@ -116,37 +115,30 @@ public class NoticraciaView extends JFrame implements Observer {
             g.fillRect(0, 0, wordCloudPanel.getWidth(), wordCloudPanel.getHeight());
 
             g.setColor(Color.BLACK);
-            Map<String, Integer> words = Map.of(
-                    "Economía", new Random().nextInt(20) + 12,
-                    "Educación", new Random().nextInt(20) + 12,
-                    "Salud", new Random().nextInt(20) + 12,
-                    "Seguridad", new Random().nextInt(20) + 12,
-                    "Empleo", new Random().nextInt(20) + 12,
-                    "Infraestructura", new Random().nextInt(20) + 12,
-                    "Corrupción", new Random().nextInt(20) + 12,
-                    "Medio Ambiente", new Random().nextInt(20) + 12
-            );
 
             var rand = new Random();
-            for (Map.Entry<String, Integer> word : wordCloud.entrySet()) {
-                g.setFont(new Font("Arial", Font.BOLD, word.getValue()));
+
+            Map<String, Integer> topTenWords = wordCloud.entrySet().stream().sorted(Map.Entry.comparingByValue(Comparator.reverseOrder())).limit(10).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+            for (Map.Entry<String, Integer> word : topTenWords.entrySet()) {
+                g.setFont(new Font("Arial", Font.BOLD, word.getValue() * 4));
                 g.drawString(word.getKey(), rand.nextInt(wordCloudPanel.getWidth() - 100), rand.nextInt(wordCloudPanel.getHeight() - 20) + 20);
             }
 
-            g.setFont(new Font("Arial", Font.PLAIN, 12));
-            g.drawString("Nube de palabras para " + selectedCandidate + " usando " + selectedSource, 10, wordCloudPanel.getHeight() - 10);
+            g.setFont(new Font("Arial", Font.PLAIN, 20));
         }
     }
 
-    private void addNewSource() {
-        String newSource = newSourceField.getText().trim();
-        if (!newSource.isEmpty()) {
-            sources.add(newSource);
-            sourceComboBox.addItem(newSource);
-            newSourceField.setText("");
-            JOptionPane.showMessageDialog(this, "Nueva fuente añadida: " + newSource);
-        }
+
+    public void updateInformationSources(Set<String> sources) {
+        SwingUtilities.invokeLater(() -> {
+            sourceComboBox.setModel(new DefaultComboBoxModel<>(sources.toArray(new String[0])));
+            sourceComboBox.revalidate();
+            sourceComboBox.repaint();
+        });
     }
 
+    public void setProcessing(boolean isProcessing) {
+        startButton.setEnabled(!isProcessing);
+    }
 
 }
