@@ -5,7 +5,6 @@
 - [Tecnologías necesarias](#tecnologías-necesarias)
 - [Dependencias](#dependencias)
 - [Instalación](#instalación)
-- [Información adicional](#documentación-adicional)
 
 ## Introducción
 
@@ -40,7 +39,3 @@ Para instalar el proyecto en un entorno local, seguí los siguientes pasos:
 
 2. **Ejecutación del programa**:
    X
-
-## Información adicional
-
-- Soporte sobre instalación disponible en hola@noticracia.com.
