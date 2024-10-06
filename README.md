@@ -44,8 +44,10 @@ Para instalar el proyecto en un entorno local, seguí los siguientes pasos:
 3. **Configurar las dependencias**:  
    Aseguráte de que Noticracia-Core y Noticracia-Ext estén correctamente vinculados como dependencias dentro de Noticracia-UI. Esto permitirá que la interfaz gráfica pueda interactuar con los módulos correspondientes.
 
+4. **Añadir noticias sobre candidatos políticos**:  
+   Las noticias por default estarán localizadas en el user home. Ej. src/main/resources/Javier Milei.txt.
 
-4. **Compilar y ejecutar**:  
+5. **Compilar y ejecutar**:  
    Dentro de Noticracia-UI, busca el archivo principal MainUI.java o App.java y ejecutálo. Este archivo contiene el punto de entrada para la aplicación y cargará la interfaz gráfica.  
    ![IMG](https://i.ibb.co/YdwspJS/4904525474764533105.jpg)
    
