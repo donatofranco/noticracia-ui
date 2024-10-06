@@ -11,7 +11,7 @@
 
 **UI Noticracia** es un sistema diseñado para generar nubes de palabras basadas en los nombres de candidatos políticos, permitiendo el análisis y la visualización de la presencia de dichos candidatos en medios periodísticos. La aplicación busca proporcionar una herramienta visual intuitiva para comparar la relevancia y el impacto de diferentes candidatos en un entorno político específico.
 
-## Tecnologías necesarias
+## Tecnologías
 
 - **Java 22**  
 - **Java Swing**
