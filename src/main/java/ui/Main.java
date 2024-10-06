@@ -1,13 +1,15 @@
 package ui;
 
 import noticracia.core.Noticracia;
+import validator.ArgsValidator;
 
 import javax.swing.*;
 
 public class Main {
 
     public static void main(String[] args) {
-        Noticracia noticracia = new Noticracia("src/main/java/resources/extensions");
+        new ArgsValidator().validate(args);
+        Noticracia noticracia = new Noticracia(args[0]);
 
         SwingUtilities.invokeLater(() -> {
             NoticraciaView noticraciaView = new NoticraciaView(noticracia);

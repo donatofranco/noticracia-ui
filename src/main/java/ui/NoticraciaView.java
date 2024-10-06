@@ -1,5 +1,6 @@
 package ui;
 
+import configuration.ConfigLoader;
 import controller.NoticraciaController;
 import noticracia.core.Noticracia;
 
@@ -7,14 +8,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
+@SuppressWarnings("deprecation")
 public class NoticraciaView extends JFrame implements Observer {
     private final Noticracia noticracia;
     private final NoticraciaController noticraciaController;
     private JComboBox<String> candidateComboBox;
-    private JComboBox<String> sourceComboBox;
     private JButton startButton;
     private JButton cancelButton;
     private JPanel wordCloudPanel;
@@ -22,22 +21,23 @@ public class NoticraciaView extends JFrame implements Observer {
     public NoticraciaView(Noticracia noticracia) {
         this.noticracia = noticracia;
         this.noticraciaController = new NoticraciaController(this, noticracia);
-        initializeUI();
+        ConfigLoader configLoader = ConfigLoader.getInstance();
+        initializeUI(configLoader.getCriteria());
         noticracia.addObserver(this);
     }
 
-    private void initializeUI() {
+    private void initializeUI(String[] candidatos) {
         setTitle("Noticracia - Nube de Palabras");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-        setupSelectionPanel();
+        setupSelectionPanel(candidatos);
         setupWordCloudPanel();
         pack();
         setLocationRelativeTo(null);
     }
 
-    private void setupSelectionPanel() {
+    private void setupSelectionPanel(String[] candidatos) {
         JPanel selectionPanel = new JPanel(new GridBagLayout());
         selectionPanel.setBorder(BorderFactory.createTitledBorder("Configuración"));
 
@@ -52,19 +52,18 @@ public class NoticraciaView extends JFrame implements Observer {
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.gridx = 1;
         gbc.gridy = 0;
-        candidateComboBox = new JComboBox<>(new String[] { "Javier Milei", "Cristina Kirchner" });
+        candidateComboBox = new JComboBox<>(candidatos);
         selectionPanel.add(candidateComboBox, gbc);
 
         gbc.anchor = GridBagConstraints.LINE_END;
         gbc.gridx = 0;
         gbc.gridy = 1;
-        selectionPanel.add(new JLabel("Seleccionar Fuente:"), gbc);
+        selectionPanel.add(new JLabel("Fuente:"), gbc);
 
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.gridx = 1;
         gbc.gridy = 1;
-        sourceComboBox = new JComboBox<>();
-        selectionPanel.add(sourceComboBox, gbc);
+        selectionPanel.add(new JLabel(this.noticracia.getInformationSourceName()), gbc);
 
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridx = 0;
@@ -74,8 +73,7 @@ public class NoticraciaView extends JFrame implements Observer {
         startButton.addActionListener(e -> {
             startButton.setEnabled(false);
             cancelButton.setVisible(true);
-            noticraciaController.startProcess((String) candidateComboBox.getSelectedItem(),
-                    (String) sourceComboBox.getSelectedItem());
+            noticraciaController.search((String) candidateComboBox.getSelectedItem());
         });
         selectionPanel.add(startButton, gbc);
 
@@ -111,12 +109,8 @@ public class NoticraciaView extends JFrame implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (o instanceof Noticracia && arg instanceof Map) {
-            updateWordCloud((Map<String, Integer>) arg);
+            drawWordCloud(wordCloudPanel.getGraphics(), (Map<String, Integer>) arg);
         }
-    }
-
-    private void updateWordCloud(Map<String, Integer> wordCloud) {
-        repaint();
     }
 
     private void drawWordCloud(Graphics g, Map<String, Integer> wordCloud) {
@@ -146,14 +140,6 @@ public class NoticraciaView extends JFrame implements Observer {
             g2d.drawString(word, -stringWidth / 2, stringHeight / 2);
             g2d.setTransform(originalTransform);
         }
-    }
-
-    public void updateInformationSources(Set<String> sources) {
-        SwingUtilities.invokeLater(() -> {
-            sourceComboBox.setModel(new DefaultComboBoxModel<>(sources.toArray(new String[0])));
-            sourceComboBox.revalidate();
-            sourceComboBox.repaint();
-        });
     }
 
     public void setProcessing(boolean isProcessing) {
