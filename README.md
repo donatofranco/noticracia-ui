@@ -37,15 +37,15 @@ Para instalar el proyecto en un entorno local, seguí los siguientes pasos:
    git clone https://github.com/donatofranco/noticracia-ui
    ```
 
-2. **Importar los proyectos**:
+2. **Importar los proyectos**:  
    Utiliza un IDE compatible con Java, como IntelliJ IDEA o Eclipse, para importar los tres repositorios como proyectos individuales.
 
 
-3. **Configurar las dependencias:**
-   Asegurate de que Noticracia-Core y Noticracia-Ext estén correctamente vinculados como dependencias dentro de Noticracia-UI. Esto permitirá que la interfaz gráfica pueda interactuar con los módulos correspondientes.
+3. **Configurar las dependencias**:  
+   Aseguráte de que Noticracia-Core y Noticracia-Ext estén correctamente vinculados como dependencias dentro de Noticracia-UI. Esto permitirá que la interfaz gráfica pueda interactuar con los módulos correspondientes.
 
 
-4. **Compilar y ejecutar:**:
+4. **Compilar y ejecutar**:  
    Dentro de Noticracia-UI, busca el archivo principal MainUI.java o App.java y ejecutálo. Este archivo contiene el punto de entrada para la aplicación y cargará la interfaz gráfica.
    [IMG 1]
    [IMG 2]
