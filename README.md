@@ -45,7 +45,7 @@ Para instalar el proyecto en un entorno local, seguí los siguientes pasos:
    Aseguráte de que Noticracia-Core y Noticracia-Ext estén correctamente vinculados como dependencias dentro de Noticracia-UI. Esto permitirá que la interfaz gráfica pueda interactuar con los módulos correspondientes.
 
 4. **Añadir noticias sobre candidatos políticos**:  
-   Las noticias deben estar ubicadas en el directorio **home** del usuario, dependiendo del sistema operativo. Los archivos que se encuentran en `src/main/resources/` del proyecto noticracia-extension-1 se dejan a modo de ejemplo y deben moverse al directorio principal del usuario. Por ejemplo, en sistemas Windows, se deben ubicar en `C:\Users\TuUsuario`, y en sistemas Unix (Linux/Mac), en `/home/TuUsuario`. Un archivo de ejemplo sería `Javier Milei.txt` dentro del directorio del usuario.
+   Las noticias deben estar ubicadas en el directorio **home** del usuario, dependiendo del sistema operativo. Los archivos que se encuentran en `src/main/resources/` del proyecto [noticracia-extension-1](https://github.com/donatofranco/noticracia-extension-1/tree/main/src/main/resources) se dejan a modo de ejemplo y deben moverse al directorio principal del usuario. Por ejemplo, en sistemas Windows, se deben ubicar en `C:\Users\TuUsuario`, y en sistemas Unix (Linux/Mac), en `/home/TuUsuario`. Un archivo de ejemplo sería `Javier Milei.txt` dentro del directorio del usuario.
 
 5. **Compilar y ejecutar**:  
    Dentro de Noticracia-UI, busca el archivo principal MainUI.java o App.java y ejecutálo. Este archivo contiene el punto de entrada para la aplicación y cargará la interfaz gráfica.  
