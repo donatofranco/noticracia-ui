@@ -7,7 +7,10 @@ import noticracia.core.Noticracia;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
 import java.util.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 public class NoticraciaView extends JFrame implements Observer {
@@ -17,6 +20,8 @@ public class NoticraciaView extends JFrame implements Observer {
     private JButton startButton;
     private JButton cancelButton;
     private JPanel wordCloudPanel;
+    private Map<String, Integer> currentWordCloud = new HashMap<>();
+    private BufferedImage wordCloudImage;
 
     public NoticraciaView(Noticracia noticracia) {
         this.noticracia = noticracia;
@@ -87,6 +92,7 @@ public class NoticraciaView extends JFrame implements Observer {
             startButton.setEnabled(true);
             cancelButton.setVisible(false);
             noticraciaController.stopProcess();
+            clearWordCloud();
         });
         selectionPanel.add(cancelButton, gbc);
 
@@ -98,8 +104,9 @@ public class NoticraciaView extends JFrame implements Observer {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.setColor(Color.WHITE);
-                g.fillRect(0, 0, getWidth(), getHeight());
+                if (wordCloudImage != null) {
+                    g.drawImage(wordCloudImage, 0, 0, null);
+                }
             }
         };
         wordCloudPanel.setPreferredSize(new Dimension(500, 400));
@@ -109,20 +116,35 @@ public class NoticraciaView extends JFrame implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (o instanceof Noticracia && arg instanceof Map) {
-            drawWordCloud(wordCloudPanel.getGraphics(), (Map<String, Integer>) arg);
+            currentWordCloud = (Map<String, Integer>) arg;
+            wordCloudImage = new BufferedImage(wordCloudPanel.getWidth(), wordCloudPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = wordCloudImage.createGraphics();
+            drawWordCloud(g2d, currentWordCloud);
+            g2d.dispose();
+            wordCloudPanel.repaint();
         }
     }
 
     private void drawWordCloud(Graphics g, Map<String, Integer> wordCloud) {
+        if (wordCloud == null || wordCloud.isEmpty()) {
+            return;
+        }
+
         Graphics2D g2d = (Graphics2D) g;
+        g2d.setColor(Color.BLACK);
         Random random = new Random();
         Dimension panelSize = wordCloudPanel.getSize();
 
-        for (Map.Entry<String, Integer> entry : wordCloud.entrySet()) {
+        List<Map.Entry<String, Integer>> topWords = wordCloud.entrySet().stream()
+                .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+                .limit(20)
+                .collect(Collectors.toList());
+
+        for (Map.Entry<String, Integer> entry : topWords) {
             String word = entry.getKey();
             int count = entry.getValue();
 
-            int fontSize = Math.max(10, (int) (count * 2));
+            int fontSize = Math.max(10, count * 5);
             Font font = new Font("Arial", Font.BOLD, fontSize);
             g2d.setFont(font);
 
@@ -130,8 +152,8 @@ public class NoticraciaView extends JFrame implements Observer {
             int stringWidth = metrics.stringWidth(word);
             int stringHeight = metrics.getHeight();
 
-            int x = random.nextInt(panelSize.width - stringWidth) + stringWidth / 2;
-            int y = random.nextInt(panelSize.height - stringHeight) + stringHeight;
+            int x = random.nextInt(Math.max(1, panelSize.width - stringWidth));
+            int y = random.nextInt(Math.max(1, panelSize.height - stringHeight)) + stringHeight;
 
             float angle = random.nextFloat() * 360;
             AffineTransform originalTransform = g2d.getTransform();
@@ -140,6 +162,11 @@ public class NoticraciaView extends JFrame implements Observer {
             g2d.drawString(word, -stringWidth / 2, stringHeight / 2);
             g2d.setTransform(originalTransform);
         }
+    }
+
+    private void clearWordCloud() {
+        wordCloudImage = null;
+        wordCloudPanel.repaint();
     }
 
     public void setProcessing(boolean isProcessing) {
