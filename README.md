@@ -18,13 +18,13 @@
 
 ## Dependencias
 
-- **Noticracia-Core**: Contiene el núcleo del proyecto. Es necesario importarlo para el correcto funcionamiento del sistema.  
+- **Noticracia-Core**: contiene el núcleo del proyecto. Es necesario importarlo para el correcto funcionamiento del sistema.  
   - [Repositorio Noticracia-Core](https://github.com/juanmanuellosada/noticracia-core.git)
 
-- **Noticracia-Ext**: Contiene la extensión del proyecto (Clarinete). Incluye módulos adicionales para el procesamiento de datos específicos de ciertos medios de comunicación.  
+- **Noticracia-Ext**: contiene la extensión del proyecto (Clarinete). Incluye módulos adicionales para el procesamiento de datos específicos de ciertos medios de comunicación.  
   - [Repositorio Noticracia-Ext](https://github.com/donatofranco/noticracia-extension-1)
 
-- **Noticracia-UI**: Contiene todo lo relacionado con la interfaz gráfica de usuario (GUI) para interactuar con el sistema de análisis y visualización.
+- **Noticracia-UI**: contiene todo lo relacionado con la interfaz gráfica de usuario (GUI) para interactuar con el sistema de análisis y visualización.
 
 ## Instalación
 
