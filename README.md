@@ -46,6 +46,6 @@ Para instalar el proyecto en un entorno local, seguí los siguientes pasos:
 
 
 4. **Compilar y ejecutar**:  
-   Dentro de Noticracia-UI, busca el archivo principal MainUI.java o App.java y ejecutálo. Este archivo contiene el punto de entrada para la aplicación y cargará la interfaz gráfica.
+   Dentro de Noticracia-UI, busca el archivo principal MainUI.java o App.java y ejecutálo. Este archivo contiene el punto de entrada para la aplicación y cargará la interfaz gráfica.  
    ![IMG](https://i.ibb.co/YdwspJS/4904525474764533105.jpg)
    
