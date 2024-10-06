@@ -9,9 +9,7 @@
 
 ## Introducción
 
-Sistema generador de nubes de palabras en base a nombres de candidatos políticos.  
-Permite analizar y visualizar la presencia de candidatos en textos periodísticos.  
-Facilita la comparación de la relevancia entre diferentes candidatos.
+**UI Noticracia** es un sistema diseñado para generar nubes de palabras basadas en los nombres de candidatos políticos, permitiendo el análisis y la visualización de la presencia de dichos candidatos en medios periodísticos. La aplicación busca proporcionar una herramienta visual intuitiva para comparar la relevancia y el impacto de diferentes candidatos en un entorno político específico.
 
 ## Tecnologías necesarias
 
@@ -20,13 +18,25 @@ Facilita la comparación de la relevancia entre diferentes candidatos.
 
 ## Dependencias
 
-- **Noticracia-Core:** X  
-- **Noticracia-Ext:** X
+- **Noticracia-Core**: Contiene el núcleo del proyecto. Es necesario importarlo para el correcto funcionamiento del sistema.  
+  - [Repositorio Noticracia-Core](https://github.com/juanmanuellosada/noticracia-core.git)
+
+- **Noticracia-Ext**: Contiene la extensión del proyecto (Clarinete). Incluye módulos adicionales para el procesamiento de datos específicos de ciertos medios de comunicación.  
+  - [Repositorio Noticracia-Ext](https://github.com/donatofranco/noticracia-extension-1)
+
+- **Noticracia-UI**: Contiene todo lo relacionado con la interfaz gráfica de usuario (GUI) para interactuar con el sistema de análisis y visualización.
 
 ## Instalación
 
-Instrucciones de instalación aún no proporcionadas. (Reemplaza esta sección con las instrucciones detalladas según las necesidades del proyecto).
+Para instalar el proyecto en un entorno local, seguí los siguientes pasos:
+
+1. **Clonar los repositorios**:  
+   Clona los repositorios de **Noticracia-Core**, **Noticracia-Ext** y **Noticracia-UI** en tu máquina local:
+   ```bash
+   git clone https://github.com/juanmanuellosada/noticracia-core.git
+   git clone https://github.com/donatofranco/noticracia-extension-1
+   git clone https://github.com/usuario/noticracia-ui.git
 
 ## Documentación adicional
 
-Para más detalles, consulta el [documento oficial sobre el proyecto](https://docs.google.com/document/d/1wAmD1riRf6_3Dky-HgDlf0qGXx3LBQbcuOnUoM3u0ZQ/edit?usp=sharing).
+- X
