@@ -36,6 +36,10 @@ Para instalar el proyecto en un entorno local, seguí los siguientes pasos:
    git clone https://github.com/juanmanuellosada/noticracia-core.git
    git clone https://github.com/donatofranco/noticracia-extension-1
    git clone https://github.com/usuario/noticracia-ui.git
+   ```
+
+2. **Ejecutación del programa**:
+   X
 
 ## Documentación adicional
 
