@@ -30,7 +30,7 @@
 Para instalar el proyecto en un entorno local, seguí los siguientes pasos:
 
 1. **Clonar los repositorios**:  
-   Clona los repositorios de **Noticracia-Core**, **Noticracia-Ext** y **Noticracia-UI** en tu máquina local:
+   Clona los repositorios de **Noticracia-Core**, **Noticracia-Ext** y **Noticracia-UI**, de la rama It-0, en tu máquina local:
    ```bash
    git clone https://github.com/juanmanuellosada/noticracia-core.git
    git clone https://github.com/donatofranco/noticracia-extension-1
