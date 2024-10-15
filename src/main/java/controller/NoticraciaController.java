@@ -13,10 +13,11 @@ public class NoticraciaController {
         this.noticraciaView = noticraciaView;
     }
 
-    public void search(String candidateName) {
+    public void search(String informationSourceSelected, String candidateName) {
         if (candidateName != null) {
-            noticracia.search(candidateName);
             noticraciaView.setProcessing(true);
+            noticracia.startSearch(informationSourceSelected, candidateName);
+            noticraciaView.setProcessing(false);
         }
     }
 

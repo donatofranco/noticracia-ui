@@ -18,8 +18,8 @@ public class NoticraciaView extends JFrame implements Observer {
     private final Noticracia noticracia;
     private final NoticraciaController noticraciaController;
     private JComboBox<String> candidateComboBox;
+    private JComboBox<String> informationSourceBox;
     private JButton startButton;
-    private JButton cancelButton;
     private JPanel wordCloudPanel;
     private Map<String, Integer> currentWordCloud = new HashMap<>();
     private BufferedImage wordCloudImage;
@@ -77,15 +77,22 @@ public class NoticraciaView extends JFrame implements Observer {
         candidateComboBox = new JComboBox<>(candidatos);
         selectionPanel.add(candidateComboBox, gbc);
 
+        gbc.anchor = GridBagConstraints.LINE_START;
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+
+        informationSourceBox = new JComboBox<>();
+        for (String informationSourcesName : noticracia.getInformationSourcesNames()) {
+            informationSourceBox.addItem(informationSourcesName);
+        }
+
+
+        selectionPanel.add(informationSourceBox, gbc);
+
         gbc.anchor = GridBagConstraints.LINE_END;
         gbc.gridx = 0;
         gbc.gridy = 1;
         selectionPanel.add(new JLabel("Fuente:"), gbc);
-
-        gbc.anchor = GridBagConstraints.LINE_START;
-        gbc.gridx = 1;
-        gbc.gridy = 1;
-        selectionPanel.add(new JLabel(this.noticracia.getInformationSourceName()), gbc);
 
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridx = 0;
@@ -93,25 +100,10 @@ public class NoticraciaView extends JFrame implements Observer {
         gbc.gridwidth = 2;
         startButton = new JButton("Generar Nube de Palabras");
         startButton.addActionListener(e -> {
-            startButton.setEnabled(false);
-            cancelButton.setVisible(true);
-            noticraciaController.search((String) candidateComboBox.getSelectedItem());
+             startButton.setEnabled(false);
+            noticraciaController.search((String) informationSourceBox.getSelectedItem() ,(String) candidateComboBox.getSelectedItem());
         });
         selectionPanel.add(startButton, gbc);
-
-        gbc.anchor = GridBagConstraints.CENTER;
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 2;
-        cancelButton = new JButton("Cancelar");
-        cancelButton.setVisible(false);
-        cancelButton.addActionListener(e -> {
-            startButton.setEnabled(true);
-            cancelButton.setVisible(false);
-            noticraciaController.stopProcess();
-            clearWordCloud();
-        });
-        selectionPanel.add(cancelButton, gbc);
 
         add(selectionPanel, BorderLayout.NORTH);
     }
@@ -168,13 +160,12 @@ public class NoticraciaView extends JFrame implements Observer {
         int baseFontSize = Math.max(10, Math.min(panelSize.width, panelSize.height) / 20);
 
         List<WordRectangle> placedWords = new ArrayList<>();
-
         for (Map.Entry<String, Integer> entry : topWords) {
             String word = entry.getKey();
             int count = entry.getValue();
 
             // Scale font size based on word frequency and panel size
-            int fontSize = Math.max(baseFontSize, (int)(baseFontSize * (1 + count / 10.0)));
+            int fontSize = Math.max(baseFontSize, (int)(baseFontSize * (1 + count / 15.0)));
             Font font = new Font("Arial", Font.BOLD, fontSize);
             g2d.setFont(font);
 
@@ -185,26 +176,36 @@ public class NoticraciaView extends JFrame implements Observer {
             boolean placed = false;
             int attempts = 0;
             while (!placed && attempts < 100) {
-                double angle = random.nextDouble() * 2 * Math.PI;
-                double distance = random.nextDouble() * (radius - Math.max(stringWidth, stringHeight) / 2);
-                int x = (int) (centerX + distance * Math.cos(angle) - stringWidth / 2);
-                int y = (int) (centerY + distance * Math.sin(angle) + stringHeight / 2);
+                int x = random.nextInt(panelSize.width - stringWidth);
+                int y = random.nextInt(panelSize.height - stringHeight) + stringHeight;
 
-                Rectangle newWordRect = new Rectangle(x, y, stringWidth, stringHeight);
-                if (isValidPlacement(newWordRect, placedWords)) {
-                    float rotationAngle = (float) (random.nextFloat() * Math.PI / 4 - Math.PI / 8);
-                    AffineTransform originalTransform = g2d.getTransform();
-                    g2d.translate(x, y);
-                    g2d.rotate(rotationAngle);
-                    g2d.drawString(word, 0, 0);
-                    g2d.setTransform(originalTransform);
+                if (isInsideCloudShape(x, y, panelSize.width, panelSize.height)) {
+                    Rectangle newWordRect = new Rectangle(x, y, stringWidth, stringHeight);
+                    if (isValidPlacement(newWordRect, placedWords)) {
+                        float rotationAngle = (float) (random.nextFloat() * Math.PI / 4 - Math.PI / 8);
+                        AffineTransform originalTransform = g2d.getTransform();
+                        g2d.translate(x, y);
+                        g2d.rotate(rotationAngle);
+                        g2d.drawString(word, 0, 0);
+                        g2d.setTransform(originalTransform);
 
-                    placedWords.add(new WordRectangle(newWordRect, word));
-                    placed = true;
+                        placedWords.add(new WordRectangle(newWordRect, word));
+                        placed = true;
+                    }
                 }
                 attempts++;
             }
         }
+
+        g2d.setColor(Color.BLACK);
+        g2d.setFont(new Font("Arial", Font.PLAIN, 12));
+        String byText = "by: " + informationSourceBox.getSelectedItem();
+        FontMetrics fm = g2d.getFontMetrics();
+        int textWidth = fm.stringWidth(byText);
+        int textHeight = fm.getHeight();
+        int x = panelSize.width - textWidth - 10;
+        int y = panelSize.height - textHeight - 10;
+        g2d.drawString(byText, x, y);
     }
 
     private void drawCloudShape(Graphics2D g2d, int width, int height) {
@@ -213,7 +214,7 @@ public class NoticraciaView extends JFrame implements Observer {
         
         int centerX = width / 2;
         int centerY = height / 2;
-        int radius = Math.min(width, height) / 3;
+        int radius = (int)(Math.min(width, height) / 3 * 1.15);
 
         g2d.fillOval(centerX - radius, centerY - radius, radius * 2, radius * 2);
         g2d.fillOval(centerX - radius / 2, centerY - radius * 3 / 4, radius, radius);
@@ -222,7 +223,7 @@ public class NoticraciaView extends JFrame implements Observer {
         g2d.fillOval(centerX + radius * 3 / 4, centerY, radius, radius);
 
         // New circle to the left, 10% smaller
-        int smallerRadius = (int)(radius * 0.9);
+        int smallerRadius = (int)(radius * 0.9 * 1.15);
         g2d.fillOval(centerX - radius * 3 / 2, centerY - radius / 2, smallerRadius, smallerRadius);
     }
 
@@ -242,5 +243,27 @@ public class NoticraciaView extends JFrame implements Observer {
 
     public void setProcessing(boolean isProcessing) {
         startButton.setEnabled(!isProcessing);
+    }
+
+    private boolean isInsideCloudShape(int x, int y, int width, int height) {
+        int centerX = width / 2;
+        int centerY = height / 2;
+        int radius = (int)(Math.min(width, height) / 3 * 1);
+
+        // Check if the point is inside any of the ovals
+        if (isInsideOval(x, y, centerX, centerY, radius, radius)) return true;
+        if (isInsideOval(x, y, centerX - radius / 2, centerY - radius * 3 / 4, radius, radius)) return true;
+        if (isInsideOval(x, y, centerX + radius / 2, centerY - radius * 3 / 4, radius, radius)) return true;
+        if (isInsideOval(x, y, centerX - radius * 3 / 4, centerY, radius, radius)) return true;
+        if (isInsideOval(x, y, centerX + radius * 3 / 4, centerY, radius, radius)) return true;
+        if (isInsideOval(x, y, centerX - radius * 3 / 2, centerY - radius / 2, (int)(radius * 0.9 * 1.15), (int)(radius * 0.9 * 1.15))) return true;
+
+        return false;
+    }
+
+    private boolean isInsideOval(int x, int y, int centerX, int centerY, int width, int height) {
+        double normalizedX = Math.pow(x - centerX, 2) / Math.pow(width / 2.0, 2);
+        double normalizedY = Math.pow(y - centerY, 2) / Math.pow(height / 2.0, 2);
+        return normalizedX + normalizedY <= 1;
     }
 }
