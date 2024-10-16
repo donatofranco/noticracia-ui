@@ -101,6 +101,7 @@ public class NoticraciaView extends JFrame implements Observer {
         startButton = new JButton("Generar Nube de Palabras");
         startButton.addActionListener(e -> {
              startButton.setEnabled(false);
+             clearWordCloud(); 
             noticraciaController.search((String) informationSourceBox.getSelectedItem() ,(String) candidateComboBox.getSelectedItem());
         });
         selectionPanel.add(startButton, gbc);
