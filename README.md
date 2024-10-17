@@ -23,7 +23,7 @@
   - [Repositorio Noticracia-Core](https://github.com/juanmanuellosada/noticracia-core/tree/it-1)
 
 - **Noticracia-Clarinete**: contiene la extensión del proyecto (Clarinete). Incluye módulos adicionales para el procesamiento de datos específicos de ciertos medios de comunicación.
-  - [Repositorio Noticracia-Ext](https://github.com/donatofranco/noticracia-extension-1)
+  - [Repositorio Noticracia-Clarinete](https://github.com/donatofranco/noticracia-extension-1)
  
 - **Nuevo**: se añaden dos extensiones al proyecto.
   - **Noticracia-Croniquita**: retorna información de la web en real time.
