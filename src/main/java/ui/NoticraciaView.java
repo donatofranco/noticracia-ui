@@ -81,10 +81,7 @@ public class NoticraciaView extends JFrame implements Observer {
         gbc.gridx = 1;
         gbc.gridy = 1;
 
-        informationSourceBox = new JComboBox<>();
-        for (String informationSourcesName : noticracia.getInformationSourcesNames()) {
-            informationSourceBox.addItem(informationSourcesName);
-        }
+        loadInformationSourceNames();
 
 
         selectionPanel.add(informationSourceBox, gbc);
@@ -107,6 +104,13 @@ public class NoticraciaView extends JFrame implements Observer {
         selectionPanel.add(startButton, gbc);
 
         add(selectionPanel, BorderLayout.NORTH);
+    }
+
+    private void loadInformationSourceNames() {
+        informationSourceBox = new JComboBox<>();
+        for (String informationSourcesName : noticracia.getInformationSourcesNames()) {
+            informationSourceBox.addItem(informationSourcesName);
+        }
     }
 
     private void setupWordCloudPanel() {
@@ -132,6 +136,9 @@ public class NoticraciaView extends JFrame implements Observer {
             drawWordCloud(g2d, currentWordCloud);
             g2d.dispose();
             wordCloudPanel.repaint();
+        }
+        if (o instanceof Noticracia && arg instanceof String && arg.equals("New InformationSource detected")) { //Nueva fuente
+            loadInformationSourceNames();
         }
     }
 
