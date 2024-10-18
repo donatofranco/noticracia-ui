@@ -18,7 +18,7 @@ public class NoticraciaView extends JFrame implements Observer {
     private final Noticracia noticracia;
     private final NoticraciaController noticraciaController;
     private JComboBox<String> candidateComboBox;
-    private JComboBox<String> informationSourceBox;
+    private JComboBox<String> informationSourceBox = new JComboBox<>();
     private JButton startButton;
     private JPanel wordCloudPanel;
     private Map<String, Integer> currentWordCloud = new HashMap<>();
@@ -107,10 +107,12 @@ public class NoticraciaView extends JFrame implements Observer {
     }
 
     private void loadInformationSourceNames() {
-        informationSourceBox = new JComboBox<>();
+        informationSourceBox.removeAllItems();
         for (String informationSourcesName : noticracia.getInformationSourcesNames()) {
             informationSourceBox.addItem(informationSourcesName);
         }
+        informationSourceBox.revalidate();
+        informationSourceBox.repaint();
     }
 
     private void setupWordCloudPanel() {

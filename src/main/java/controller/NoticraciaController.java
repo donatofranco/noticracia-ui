@@ -20,8 +20,4 @@ public class NoticraciaController {
             noticraciaView.setProcessing(false);
         }
     }
-
-    public void stopProcess() {
-        noticraciaView.setProcessing(false);
-    }
 }
