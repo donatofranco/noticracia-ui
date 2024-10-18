@@ -137,8 +137,9 @@ public class NoticraciaView extends JFrame implements Observer {
             g2d.dispose();
             wordCloudPanel.repaint();
         }
-        if (o instanceof Noticracia && arg instanceof String && arg.equals("New InformationSource detected")) { //Nueva fuente
+        if(o instanceof Noticracia && "Attemting to load new information sources...".equals(arg)) {
             loadInformationSourceNames();
+            System.out.println(noticracia.getInformationSourcesNames());
         }
     }
 

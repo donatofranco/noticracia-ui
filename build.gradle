@@ -13,7 +13,7 @@ repositories {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    implementation 'com.github.juanmanuellosada:noticracia-core:5f0c2e6c66'
+    implementation 'com.github.juanmanuellosada:noticracia-core:4cacab8586'
 }
 
 test {
