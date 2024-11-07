@@ -68,7 +68,7 @@ public class NoticraciaView extends JFrame implements Observer {
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.gridx = 1;
         gbc.gridy = 1;
-        selectionPanel.add(new JLabel(this.noticracia.getInformationSourceName()), gbc);
+        selectionPanel.add(new JLabel(this.noticracia.noticraciaCore.informationSources.keySet().iterator().next()), gbc);
 
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridx = 0;
@@ -137,7 +137,7 @@ public class NoticraciaView extends JFrame implements Observer {
 
         List<Map.Entry<String, Integer>> topWords = wordCloud.entrySet().stream()
                 .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
-                .limit(20)
+                .limit(8)
                 .collect(Collectors.toList());
 
         for (Map.Entry<String, Integer> entry : topWords) {
