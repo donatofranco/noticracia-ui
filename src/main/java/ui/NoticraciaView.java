@@ -26,7 +26,7 @@ public class NoticraciaView extends JFrame implements Observer {
     public NoticraciaView(Noticracia noticracia) {
         this.noticracia = noticracia;
         this.noticraciaController = new NoticraciaController(this, noticracia);
-        ConfigLoader configLoader = ConfigLoader.getInstance();
+        ConfigLoader configLoader = new ConfigLoader();
         initializeUI(configLoader.getCriteria());
         noticracia.addObserver(this);
     }
