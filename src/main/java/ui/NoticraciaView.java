@@ -1,7 +1,6 @@
 package ui;
 
 import controller.NoticraciaController;
-import noticracia.core.Noticracia;
 import noticracia.entities.WordCloud;
 
 import javax.swing.*;
@@ -14,22 +13,15 @@ import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
 public class NoticraciaView extends JFrame {
-    private final Noticracia noticracia;
-    private final NoticraciaController noticraciaController;
     private JComboBox<String> candidateComboBox;
     private JButton startButton;
     private JButton cancelButton;
     private JPanel wordCloudPanel;
     private Map<String, Integer> currentWordCloud = new HashMap<>();
     private BufferedImage wordCloudImage;
+    private NoticraciaController noticraciaController;
 
-    public NoticraciaView(Noticracia noticracia) {
-        this.noticracia = noticracia;
-        this.noticraciaController = new NoticraciaController(this, noticracia);
-        initializeUI(noticracia.getPoliticalCandidates());
-    }
-
-    private void initializeUI(String[] candidatos) {
+    public void initializeUI(String[] candidatos) {
         setTitle("Noticracia - Nube de Palabras");
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -66,7 +58,7 @@ public class NoticraciaView extends JFrame {
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.gridx = 1;
         gbc.gridy = 1;
-        selectionPanel.add(new JLabel(this.noticracia.informationSources.keySet().iterator().next()), gbc);
+        selectionPanel.add(new JLabel(noticraciaController.getInformationSources().keySet().iterator().next()), gbc);
 
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridx = 0;
@@ -166,5 +158,9 @@ public class NoticraciaView extends JFrame {
             drawWordCloud(g2d, currentWordCloud);
             g2d.dispose();
             wordCloudPanel.repaint();
+    }
+
+    public void setController(NoticraciaController noticraciaController) {
+        this.noticraciaController = noticraciaController;
     }
 }

@@ -1,5 +1,6 @@
 package ui;
 
+import controller.NoticraciaController;
 import noticracia.core.Noticracia;
 import noticracia.services.factories.NoticraciaFactory;
 import validator.ArgsValidator;
@@ -13,7 +14,9 @@ public class Main {
         Noticracia noticracia = new NoticraciaFactory().createNoticracia(args[0]);
 
         SwingUtilities.invokeLater(() -> {
-            NoticraciaView noticraciaView = new NoticraciaView(noticracia);
+            NoticraciaView noticraciaView = new NoticraciaView();
+            NoticraciaController noticraciaController = new NoticraciaController(noticraciaView, noticracia);
+            noticraciaView.initializeUI(noticraciaController.getPoliticalCandidates());
             noticraciaView.setVisible(true);
         });
     }
