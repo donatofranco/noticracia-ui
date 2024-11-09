@@ -1,8 +1,8 @@
 package ui;
 
-import configuration.ConfigLoader;
 import controller.NoticraciaController;
 import noticracia.core.Noticracia;
+import noticracia.entities.WordCloud;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
-public class NoticraciaView extends JFrame implements Observer {
+public class NoticraciaView extends JFrame {
     private final Noticracia noticracia;
     private final NoticraciaController noticraciaController;
     private JComboBox<String> candidateComboBox;
@@ -26,9 +26,7 @@ public class NoticraciaView extends JFrame implements Observer {
     public NoticraciaView(Noticracia noticracia) {
         this.noticracia = noticracia;
         this.noticraciaController = new NoticraciaController(this, noticracia);
-        ConfigLoader configLoader = new ConfigLoader();
-        initializeUI(configLoader.getCriteria());
-        noticracia.addObserver(this);
+        initializeUI(noticracia.getPoliticalCandidates());
     }
 
     private void initializeUI(String[] candidatos) {
@@ -68,7 +66,7 @@ public class NoticraciaView extends JFrame implements Observer {
         gbc.anchor = GridBagConstraints.LINE_START;
         gbc.gridx = 1;
         gbc.gridy = 1;
-        selectionPanel.add(new JLabel(this.noticracia.noticraciaCore.informationSources.keySet().iterator().next()), gbc);
+        selectionPanel.add(new JLabel(this.noticracia.informationSources.keySet().iterator().next()), gbc);
 
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridx = 0;
@@ -78,7 +76,7 @@ public class NoticraciaView extends JFrame implements Observer {
         startButton.addActionListener(e -> {
             startButton.setEnabled(false);
             cancelButton.setVisible(true);
-            noticraciaController.search((String) candidateComboBox.getSelectedItem());
+            noticraciaController.getWordCloud((String) candidateComboBox.getSelectedItem());
         });
         selectionPanel.add(startButton, gbc);
 
@@ -111,18 +109,6 @@ public class NoticraciaView extends JFrame implements Observer {
         };
         wordCloudPanel.setPreferredSize(new Dimension(500, 400));
         add(new JScrollPane(wordCloudPanel), BorderLayout.CENTER);
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-        if (o instanceof Noticracia && arg instanceof Map) {
-            currentWordCloud = (Map<String, Integer>) arg;
-            wordCloudImage = new BufferedImage(wordCloudPanel.getWidth(), wordCloudPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
-            Graphics2D g2d = wordCloudImage.createGraphics();
-            drawWordCloud(g2d, currentWordCloud);
-            g2d.dispose();
-            wordCloudPanel.repaint();
-        }
     }
 
     private void drawWordCloud(Graphics g, Map<String, Integer> wordCloud) {
@@ -171,5 +157,14 @@ public class NoticraciaView extends JFrame implements Observer {
 
     public void setProcessing(boolean isProcessing) {
         startButton.setEnabled(!isProcessing);
+    }
+
+    public void setWordCloud(WordCloud wordCloud) {
+            currentWordCloud = wordCloud.getWordCloud();
+            wordCloudImage = new BufferedImage(wordCloudPanel.getWidth(), wordCloudPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = wordCloudImage.createGraphics();
+            drawWordCloud(g2d, currentWordCloud);
+            g2d.dispose();
+            wordCloudPanel.repaint();
     }
 }

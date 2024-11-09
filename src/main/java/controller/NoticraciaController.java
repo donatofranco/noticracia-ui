@@ -1,6 +1,7 @@
 package controller;
 
 import noticracia.core.Noticracia;
+import noticracia.entities.WordCloud;
 import ui.NoticraciaView;
 
 public class NoticraciaController {
@@ -13,11 +14,9 @@ public class NoticraciaController {
         this.noticraciaView = noticraciaView;
     }
 
-    public void search(String candidateName) {
-        if (candidateName != null) {
-            noticracia.search(candidateName);
-            noticraciaView.setProcessing(true);
-        }
+    public void getWordCloud(String candidateName) {
+        WordCloud wordCloud = noticracia.generateWordCloud(candidateName);
+        noticraciaView.setWordCloud(wordCloud);
     }
 
     public void stopProcess() {
