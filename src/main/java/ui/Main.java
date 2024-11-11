@@ -17,6 +17,7 @@ public class Main {
             NoticraciaView noticraciaView = new NoticraciaView();
             NoticraciaController noticraciaController = new NoticraciaController(noticraciaView, noticracia);
             noticraciaView.initializeUI(noticraciaController.getPoliticalCandidates());
+            noticracia.addObserver(noticraciaView);
             noticraciaView.setVisible(true);
         });
     }

@@ -1,6 +1,7 @@
 package ui;
 
 import controller.NoticraciaController;
+import noticracia.core.Noticracia;
 import noticracia.entities.WordCloud;
 
 import javax.swing.*;
@@ -12,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SuppressWarnings("deprecation")
-public class NoticraciaView extends JFrame {
+public class NoticraciaView extends JFrame implements Observer {
     private JComboBox<String> candidateComboBox;
     private JButton startButton;
     private JButton cancelButton;
@@ -162,5 +163,17 @@ public class NoticraciaView extends JFrame {
 
     public void setController(NoticraciaController noticraciaController) {
         this.noticraciaController = noticraciaController;
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        if (o instanceof Noticracia && arg instanceof Map) {
+            currentWordCloud = (Map<String, Integer>) arg;
+            wordCloudImage = new BufferedImage(wordCloudPanel.getWidth(), wordCloudPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = wordCloudImage.createGraphics();
+            drawWordCloud(g2d, currentWordCloud);
+            g2d.dispose();
+            wordCloudPanel.repaint();
+        }
     }
 }

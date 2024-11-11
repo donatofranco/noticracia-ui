@@ -28,10 +28,10 @@ public class NoticraciaController {
     }
 
     public String[] getPoliticalCandidates() {
-        return noticracia.getPoliticalCandidates();
+        return noticracia.getPoliticalCandidatesNames();
     }
 
     public Map<String, InformationSource> getInformationSources() {
-        return noticracia.informationSources;
+        return noticracia.getInformationSources();
     }
 }
